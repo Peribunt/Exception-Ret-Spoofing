@@ -1,7 +1,7 @@
 #include <windows.h>
 #include <cstdio>
 
-#define MAGIC_SPOOF_RETADDR_NUMBER 0xDEADBEEFCAFE0001
+#define MAGIC_SPOOF_RETADDR_NUMBER 0xDEADBEEF00000001
 
 #define CONSOLE_LOG( Fmt, ... ) \
 printf( "[!] " __FUNCTION__ ": " Fmt "\n", ##__VA_ARGS__ )
