@@ -83,7 +83,7 @@ LONG main( VOID )
 
 	//
 	// Set up the spoof call for MessageBoxA
-	// Make the return address is a 0xCC anywhere in the executable region of the module I suppose
+	// Make the return address a 0xCC anywhere in the executable region of the module I suppose
 	//
 	ReturnSpoofer::SetupSpoofCall( 
 		MessageBoxA, ( LPVOID )( ( ULONG64 )MessageBoxA - 1 ) );
