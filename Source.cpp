@@ -11,33 +11,23 @@ namespace ReturnSpoofer
 	LPVOID FunctionToCall;
 	LPVOID FakeReturnAddress;
 	LPVOID ReturnAddressBackup;
-	
-	__forceinline
-	VOID WINAPI SetupSpoofCall(
-		IN LPVOID Function,
-		IN LPVOID FakeRet ) 
-		noexcept
-	{
-		FunctionToCall = Function;
-		FakeReturnAddress = FakeRet;
-	}
 
 	extern "C"
-	ULONG_PTR SpoofCall(
-		IN ... );
-	
-	template< typename _RET_TYPE_, 
-	typename... _VA_ARGS_ >
-	__forceinline
-	_RET_TYPE_ WINAPI DoSpoofCall(
-		IN LPVOID Function,
-		IN LPVOID FakeRet,
-		IN OUT _VA_ARGS_... Args OPTIONAL )
+		ULONG_PTR SpoofCall(
+			IN ... );
+
+	template< typename _RET_TYPE_,
+		typename... _VA_ARGS_ >
+		__forceinline
+		_RET_TYPE_ WINAPI DoSpoofCall(
+			IN LPVOID Function,
+			IN LPVOID FakeRet,
+			IN OUT _VA_ARGS_... Args OPTIONAL )
 		noexcept
 	{
 		FunctionToCall = Function;
 		FakeReturnAddress = FakeRet;
-		
+
 		return ( ( _RET_TYPE_( * )( IN OUT ... OPTIONAL ) )SpoofCall )
 			( Args... );
 	}
@@ -45,7 +35,7 @@ namespace ReturnSpoofer
 
 LONG WINAPI VectoredHandler( IN LPEXCEPTION_POINTERS ExceptionPointers )
 {
-	const PCONTEXT				ContextRecord   = ExceptionPointers->ContextRecord;
+	const PCONTEXT				ContextRecord = ExceptionPointers->ContextRecord;
 	const LPEXCEPTION_RECORD	ExceptionRecord = ExceptionPointers->ExceptionRecord;
 
 	//
@@ -60,7 +50,7 @@ LONG WINAPI VectoredHandler( IN LPEXCEPTION_POINTERS ExceptionPointers )
 		{
 			ReturnSpoofer::ReturnAddressBackup = *(LPVOID*)( ContextRecord->Rsp );
 
-			*( LPVOID* )( ContextRecord->Rsp ) = ReturnSpoofer::FakeReturnAddress;
+			*(LPVOID*)( ContextRecord->Rsp ) = ReturnSpoofer::FakeReturnAddress;
 
 			CONSOLE_LOG( "Old return address: %p", ReturnSpoofer::ReturnAddressBackup );
 			CONSOLE_LOG( "New return address: %p", ReturnSpoofer::FakeReturnAddress );
@@ -94,21 +84,12 @@ LONG main( VOID )
 	//
 	// Add a vectored handler ( Of course you can also use KiUserExceptionDispatcher )
 	//
-	LPVOID ExceptionHandler = 
+	LPVOID ExceptionHandler =
 		AddVectoredExceptionHandler( TRUE, VectoredHandler );
 
-	//
-	// Set up the spoof call for MessageBoxA
-	// Make the return address a 0xCC anywhere in the executable region of the module I suppose
-	//
-	ReturnSpoofer::SetupSpoofCall( 
-		MessageBoxA, ( LPVOID )( ( ULONG64 )MessageBoxA - 1 ) );
-
-	//
-	// Call the MessageBoxA function with a spoofed return address
-	//
 	DWORD Result = 
-		ReturnSpoofer::SpoofCall( NULL, "Hello World", "Spoofed call", NULL );
+		ReturnSpoofer::DoSpoofCall<DWORD>( MessageBoxA, (PBYTE)( MessageBoxA ) - 1, 
+			NULL, "Skeet", "Yeet", NULL );
 
 	//
 	// Log to prove both execution flow lands here and the value returned properly
