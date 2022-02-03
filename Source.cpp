@@ -89,7 +89,7 @@ LONG main( VOID )
 
 	DWORD Result = 
 		ReturnSpoofer::DoSpoofCall<DWORD>( MessageBoxA, (PBYTE)( MessageBoxA ) - 1, 
-			NULL, "Hello world", "Spoofed call", NULL );
+			NULL, "Hello World", "Spoofed call", NULL );
 
 	//
 	// Log to prove both execution flow lands here and the value returned properly
