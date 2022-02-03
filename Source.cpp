@@ -38,7 +38,7 @@ namespace ReturnSpoofer
 		FunctionToCall = Function;
 		FakeReturnAddress = FakeRet;
 		
-		( ( _RET_TYPE_( * )( IN OUT ... OPTIONAL ) )&SpoofCall )
+		return ( ( _RET_TYPE_( * )( IN OUT ... OPTIONAL ) )&SpoofCall )
 			( Args... );
 	}
 }
