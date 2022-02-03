@@ -11,7 +11,7 @@ namespace ReturnSpoofer
 	LPVOID FunctionToCall;
 	LPVOID FakeReturnAddress;
 	LPVOID ReturnAddressBackup;
-
+	
 	__forceinline
 	VOID WINAPI SetupSpoofCall(
 		IN LPVOID Function,
@@ -25,6 +25,22 @@ namespace ReturnSpoofer
 	extern "C"
 	ULONG_PTR SpoofCall(
 		IN ... );
+	
+	template< typename _RET_TYPE_, 
+	typename... _VA_ARGS_ >
+	__forceinline
+	_RET_TYPE_ WINAPI DoSpoofCall(
+		IN LPVOID Function,
+		IN LPVOID FakeRet,
+		IN OUT _VA_ARGS_... Args OPTIONAL )
+		noexcept
+	{
+		FunctionToCall = Function;
+		FakeReturnAddress = FakeRet;
+		
+		( ( _RET_TYPE_( * )( IN OUT ... OPTIONAL ) )&SpoofCall )
+			( Args... );
+	}
 }
 
 LONG WINAPI VectoredHandler( IN LPEXCEPTION_POINTERS ExceptionPointers )
