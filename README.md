@@ -10,7 +10,7 @@ Pros:
 Cons:
 * Very slight but noticeable performance decrease when used in loops or frequently called hooks
 * Relies on the preservation of the nonvolatile GPRs of the x64 calling convention
-  * Which in this case means it always expects these registers to be preserved, in very rare cases it might not be
+  * Which in this case means it always expects these registers to be preserved, in very rare cases they might not be
   * Read [MSDN Documentation for Caller/Callee Saved registers](https://docs.microsoft.com/en-us/cpp/build/x64-calling-convention?view=msvc-170#callercallee-saved-registers)
   
 # Results
